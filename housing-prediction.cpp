@@ -3,27 +3,31 @@
 #include<vector>
 
 using namespace std;
-
 typedef long long ll;
 
-float linear_function(int x, float w, float b) {
-    return(w * x + b);
-}
+float linear_function(int x, float w, float b) { return(w * x + b); }
 
 float squared_error_cost_function(float w, float b, vector<pair<int,int> > training_houses) {
+    // Starting value of cost function
     float J = 0;
     
-    // sum((y_(i) - y(i))^2)
+    // Summing up all the differences between predicted y values (using linear_function(w,b))
+    // and the y values of training samples
+    // Formula:
+    // sum( (ŷ(i) - y(i))^2 )  or  sum( ( f[w,b](x(i)) - y(i) )^2 )  
     for(int i = 0; i < training_houses.size(); i++) {
         J += pow(linear_function(training_houses[i].first, w, b) - training_houses[i].second, 2);
     }
     
-    // J = 1/2m * sum((y(i) - y(i))^2)    
+    // The sum divided by 2 times the size of training dataset
     return(J / (2 * training_houses.size()));
 }
 
 float derivative_w(float w, float b, vector<pair<int,int> > training_houses) {
-    
+    // Calculating the derivative of w using cost function formula
+    // Formula:
+    // sum( ( f[w,b](x(i)) - y(i) )  * x(i) ) / m
+
     float J = 0;
     
     for(int i = 0; i < training_houses.size(); i++) {
@@ -34,6 +38,9 @@ float derivative_w(float w, float b, vector<pair<int,int> > training_houses) {
 }
 
 float derivative_b(float w, float b, vector<pair<int,int> > training_houses) {
+    // Calculating the derivative of b using cost function formula
+    // Formula:
+    // sum( ( f[w,b](x(i)) - y(i) ) ) / m
     
     float J = 0;
     
@@ -45,8 +52,8 @@ float derivative_b(float w, float b, vector<pair<int,int> > training_houses) {
 }
 
 int main() {
+    // Training dataset
     vector<pair<int,int> > training_houses;
-    
     training_houses.push_back(make_pair(94, 660000));
     training_houses.push_back(make_pair(211, 890000));
     training_houses.push_back(make_pair(154, 648000));
@@ -57,45 +64,37 @@ int main() {
     training_houses.push_back(make_pair(92, 399990));
     training_houses.push_back(make_pair(500, 870000));
     
-    // y = linear_function(x)
+    // Starting values of w and b
     float w = 0, b = 0;
     
-    // test of cost function
-    float cost_function = squared_error_cost_function(w, b, training_houses);
-    
-    // batch gradient descent
+    // Batch Gradient Descent
     float learning_rate = 0.00004;
-    
     float tmp_w, tmp_b;
-    float min_cost = 99999999999999999;
+    float min_cost = squared_error_cost_function(w, b, training_houses);
+    
+    // 500 000 iterations of Batch Gradient Descent - updating w and b using learning rate times their derivatives
     for(int i = 0; i < 500000; i++) {
-        cout << "iteration n." << i << endl;
-        cout << "starting cost_function: " << cost_function << endl;
-        // repeat until find the minimum
         tmp_w = w - learning_rate * derivative_w(w, b, training_houses);
         tmp_b = b - learning_rate * derivative_b(w, b, training_houses);;
 
         w = tmp_w;
         b = tmp_b;
-        
-        cout << "w: " << w << endl;
-        cout << "b: " << b << endl;
-        cost_function = squared_error_cost_function(w, b, training_houses);
-        cout << "result cost_function: " << cost_function << endl;
-        cout << "----------------" << endl;
-        min_cost = min(min_cost, cost_function);
     }
-    cout << "----------------" << endl;
-    cout << "----------------" << endl;
-    cout << "----------------" << endl;
+    
+    float result_cost_function = squared_error_cost_function(w, b, training_houses);
+
+    cout << "Result:" << endl;
     cout << "w: " << w << endl;
     cout << "b: " << b << endl;
+    cout << "Linear function: " << w << "x + " << b << endl;
+    cout << "Squared Error Cost Function value: " << result_cost_function << endl;
+    cout << "----------------" << "\n\n";
     
+    // Prediction - input and output
     int size;
-    cout << "Size of a house in feet: ";
+    cout << "Enter size of a house in meters squared: ";
     cin >> size;
-
-    cout << "Predicted price: " << w*size+b << endl;
-    cout << "With squared_error_cost function value: " << cost_function << endl;
+    cout << "Predicted price: " << w * size + b << endl;
+    
     return 0;
 }
