@@ -3,4 +3,6 @@ My implementation of linear regression from scratch with C++. It's done using an
 
 # The prediction:
 After 500 000 iterations of Batch Gradient Descent this is the linear function that predicts the price of houses from the training dataset:
-  y = 662.872x + 502517
+```
+y = 662.872x + 502517
+```
